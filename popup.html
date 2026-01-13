@@ -19,6 +19,10 @@
           <path d="M10 9H9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <h1>Resume Tailor</h1>
+        <span id="proBadge" class="pro-badge hidden">PRO</span>
+      </div>
+      <div id="usageCounter" class="usage-counter hidden">
+        <span id="usageText">0/3 free</span>
       </div>
       <div class="header-actions">
         <button id="historyBtn" class="icon-btn" title="History">
@@ -390,10 +394,56 @@ Example for a Cyber Security profile:
 
         <div class="settings-actions">
           <button id="saveSettingsBtn" class="btn btn-primary">Save Changes</button>
+          <button id="manageSubscriptionBtn" class="btn btn-secondary hidden">Manage Subscription</button>
           <button id="clearDataBtn" class="btn btn-danger">Clear All Data</button>
         </div>
       </div>
     </main>
+
+    <!-- Upgrade Modal -->
+    <div id="upgradeModal" class="modal hidden">
+      <div class="modal-overlay"></div>
+      <div class="modal-content">
+        <button id="closeUpgradeModal" class="modal-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>Upgrade to Pro</h2>
+          <p>You've used all 3 free resume generations this month. Upgrade to Pro for unlimited access!</p>
+        </div>
+        <div class="pricing-options">
+          <button id="monthlyPlanBtn" class="pricing-card">
+            <div class="pricing-header">
+              <span class="pricing-title">Monthly</span>
+              <span class="pricing-price">$9<span class="pricing-period">/month</span></span>
+            </div>
+            <ul class="pricing-features">
+              <li>Unlimited resume generations</li>
+              <li>Cancel anytime</li>
+            </ul>
+          </button>
+          <button id="lifetimePlanBtn" class="pricing-card featured">
+            <div class="pricing-badge">Best Value</div>
+            <div class="pricing-header">
+              <span class="pricing-title">Lifetime</span>
+              <span class="pricing-price">$49<span class="pricing-period"> one-time</span></span>
+            </div>
+            <ul class="pricing-features">
+              <li>Unlimited resume generations</li>
+              <li>Pay once, use forever</li>
+            </ul>
+          </button>
+        </div>
+        <p class="modal-footer-text">Already have an account? <a href="#" id="loginLink">Sign in</a></p>
+      </div>
+    </div>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast hidden">

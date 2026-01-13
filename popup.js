@@ -3,6 +3,7 @@
 // =============================================================================
 const USE_BACKEND = true;
 const API_BASE_URL = 'https://resume-tailor-api.richardechols92.workers.dev';
+const FREE_TIER_LIMIT = 3; // Free users get 3 generations per month
 
 // =============================================================================
 // DOM Elements
@@ -43,6 +44,7 @@ const settingsLinkedinInput = document.getElementById('settingsLinkedin');
 const settingsBackgroundInput = document.getElementById('settingsBackground');
 const saveSettingsBtn = document.getElementById('saveSettingsBtn');
 const clearDataBtn = document.getElementById('clearDataBtn');
+const manageSubscriptionBtn = document.getElementById('manageSubscriptionBtn');
 
 // Main view elements
 const activeProfileSelect = document.getElementById('activeProfile');
@@ -93,6 +95,17 @@ const historyList = document.getElementById('historyList');
 const toast = document.getElementById('toast');
 const toastMessage = document.getElementById('toastMessage');
 
+// Upgrade modal elements
+const upgradeModal = document.getElementById('upgradeModal');
+const closeUpgradeModal = document.getElementById('closeUpgradeModal');
+const monthlyPlanBtn = document.getElementById('monthlyPlanBtn');
+const lifetimePlanBtn = document.getElementById('lifetimePlanBtn');
+const loginLink = document.getElementById('loginLink');
+
+// Pro badge
+const proBadge = document.getElementById('proBadge');
+const usageCounter = document.getElementById('usageCounter');
+
 // =============================================================================
 // State
 // =============================================================================
@@ -103,6 +116,7 @@ let generatedInterviewQuestions = null;
 let matchScores = { before: 0, after: 0 };
 let addedKeywords = [];
 let editingProfileId = null;
+let isPaidUser = false;
 
 // =============================================================================
 // Initialize
@@ -110,6 +124,9 @@ let editingProfileId = null;
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
+  // Check payment status first
+  await checkPaymentStatus();
+
   const { contactInfo, profiles, activeProfileId } = await chrome.storage.local.get(['contactInfo', 'profiles', 'activeProfileId']);
 
   if (!contactInfo || !contactInfo.fullName) {
@@ -130,6 +147,166 @@ async function init() {
   // Download button - directly downloads as DOCX
   if (downloadBtn) {
     downloadBtn.addEventListener('click', downloadAsDocx);
+  }
+
+  // Setup upgrade modal handlers
+  setupUpgradeModal();
+
+  // Listen for payment completion from background
+  chrome.runtime.onMessage.addListener((request) => {
+    if (request.action === 'paymentCompleted') {
+      isPaidUser = true;
+      updateProBadge();
+      hideUpgradeModal();
+      showToast('Welcome to Pro! Unlimited generations unlocked.', 'success');
+    }
+  });
+}
+
+// =============================================================================
+// Payment & Usage Functions
+// =============================================================================
+async function checkPaymentStatus() {
+  try {
+    const response = await chrome.runtime.sendMessage({ action: 'checkPaymentStatus' });
+    isPaidUser = response?.paid || false;
+    updateProBadge();
+    await updateUsageDisplay();
+  } catch (error) {
+    console.error('Error checking payment status:', error);
+    isPaidUser = false;
+  }
+}
+
+function updateProBadge() {
+  if (proBadge) {
+    if (isPaidUser) {
+      proBadge.classList.remove('hidden');
+    } else {
+      proBadge.classList.add('hidden');
+    }
+  }
+}
+
+async function updateUsageDisplay() {
+  if (!usageCounter) return;
+
+  if (isPaidUser) {
+    usageCounter.classList.add('hidden');
+    return;
+  }
+
+  // Show usage counter for free users
+  usageCounter.classList.remove('hidden');
+  const usage = await getUsageData();
+  const remaining = Math.max(0, FREE_TIER_LIMIT - usage.generationsThisMonth);
+  const usageText = usageCounter.querySelector('#usageText');
+
+  if (usageText) {
+    usageText.textContent = `${usage.generationsThisMonth}/${FREE_TIER_LIMIT} used`;
+  }
+
+  // Update styling based on usage
+  usageCounter.classList.remove('warning', 'limit-reached');
+  if (remaining === 0) {
+    usageCounter.classList.add('limit-reached');
+  } else if (remaining === 1) {
+    usageCounter.classList.add('warning');
+  }
+}
+
+async function getUsageData() {
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${now.getMonth() + 1}`;
+
+  const { usageData } = await chrome.storage.local.get(['usageData']);
+
+  // Initialize or reset if new month
+  if (!usageData || usageData.currentMonth !== currentMonthKey) {
+    const newUsageData = {
+      currentMonth: currentMonthKey,
+      generationsThisMonth: 0
+    };
+    await chrome.storage.local.set({ usageData: newUsageData });
+    return newUsageData;
+  }
+
+  return usageData;
+}
+
+async function incrementUsage() {
+  const usage = await getUsageData();
+  usage.generationsThisMonth += 1;
+  await chrome.storage.local.set({ usageData: usage });
+  await updateUsageDisplay();
+}
+
+async function canGenerate() {
+  if (isPaidUser) return true;
+
+  const usage = await getUsageData();
+  return usage.generationsThisMonth < FREE_TIER_LIMIT;
+}
+
+async function getRemainingGenerations() {
+  if (isPaidUser) return Infinity;
+
+  const usage = await getUsageData();
+  return Math.max(0, FREE_TIER_LIMIT - usage.generationsThisMonth);
+}
+
+// =============================================================================
+// Upgrade Modal Functions
+// =============================================================================
+function setupUpgradeModal() {
+  if (closeUpgradeModal) {
+    closeUpgradeModal.addEventListener('click', hideUpgradeModal);
+  }
+
+  if (monthlyPlanBtn) {
+    monthlyPlanBtn.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: 'openPaymentPage', plan: 'monthly' });
+    });
+  }
+
+  if (lifetimePlanBtn) {
+    lifetimePlanBtn.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: 'openPaymentPage', plan: 'lifetime' });
+    });
+  }
+
+  if (loginLink) {
+    loginLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.runtime.sendMessage({ action: 'openLoginPage' });
+    });
+  }
+
+  if (manageSubscriptionBtn) {
+    manageSubscriptionBtn.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ action: 'openPaymentPage' });
+    });
+  }
+
+  // Close modal when clicking outside
+  if (upgradeModal) {
+    upgradeModal.addEventListener('click', (e) => {
+      if (e.target === upgradeModal) {
+        hideUpgradeModal();
+      }
+    });
+  }
+}
+
+function showUpgradeModal() {
+  if (upgradeModal) {
+    upgradeModal.classList.remove('hidden');
+  }
+}
+
+function hideUpgradeModal() {
+  if (upgradeModal) {
+    upgradeModal.classList.add('hidden');
   }
 }
 
@@ -158,6 +335,7 @@ function showView(view) {
       break;
     case 'main':
       mainView.classList.remove('hidden');
+      updateUsageDisplay();
       break;
     case 'settings':
       settingsView.classList.remove('hidden');
@@ -200,6 +378,15 @@ async function loadSettingsData() {
     if (settingsFullNameInput) settingsFullNameInput.value = contactInfo.fullName || '';
     if (settingsPhoneInput) settingsPhoneInput.value = contactInfo.phoneNumber || '';
     if (settingsLinkedinInput) settingsLinkedinInput.value = contactInfo.linkedinUrl || '';
+  }
+
+  // Show/hide manage subscription button based on payment status
+  if (manageSubscriptionBtn) {
+    if (isPaidUser) {
+      manageSubscriptionBtn.classList.remove('hidden');
+    } else {
+      manageSubscriptionBtn.classList.add('hidden');
+    }
   }
 }
 
@@ -643,6 +830,13 @@ async function generateResume() {
     return;
   }
 
+  // Check if user can generate (paid or under free limit)
+  const canProceed = await canGenerate();
+  if (!canProceed) {
+    showUpgradeModal();
+    return;
+  }
+
   const { contactInfo, profiles, activeProfileId } = await chrome.storage.local.get(['contactInfo', 'profiles', 'activeProfileId']);
   const activeProfile = profiles?.find(p => p.id === activeProfileId);
 
@@ -666,6 +860,11 @@ async function generateResume() {
     matchScores.after = result.afterScore;
     addedKeywords = result.keywords;
     generatedInterviewQuestions = result.interviewQuestions;
+
+    // Increment usage count for free users
+    if (!isPaidUser) {
+      await incrementUsage();
+    }
 
     loadingState.classList.add('hidden');
     resumeContent.textContent = generatedResume;
