@@ -1,0 +1,14 @@
+{
+  "name": "resume-tailor-api",
+  "version": "1.0.0",
+  "description": "Backend API for Resume Tailor Chrome Extension",
+  "main": "worker.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "login": "wrangler login"
+  },
+  "devDependencies": {
+    "wrangler": "^4.58.0"
+  }
+}

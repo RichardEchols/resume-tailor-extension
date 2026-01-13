@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Tailor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 9H9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h1>Resume Tailor</h1>
+      </div>
+      <div class="header-actions">
+        <button id="historyBtn" class="icon-btn" title="History">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button id="settingsBtn" class="icon-btn" title="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 1V4M12 20V23M4.22 4.22L6.34 6.34M17.66 17.66L19.78 19.78M1 12H4M20 12H23M4.22 19.78L6.34 17.66M17.66 6.34L19.78 4.22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Setup View (First Time) -->
+      <div id="setupView" class="view">
+        <div class="setup-intro">
+          <h2>Welcome!</h2>
+          <p>Set up your contact info, then create resume profiles for different job types.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="fullName">Full Name <span class="required">*</span></label>
+          <input type="text" id="fullName" placeholder="John Smith">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email <span class="required">*</span></label>
+          <input type="email" id="email" placeholder="john@example.com">
+        </div>
+
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number <span class="required">*</span></label>
+          <input type="tel" id="phoneNumber" placeholder="(555) 123-4567">
+        </div>
+
+        <div class="form-group">
+          <label for="linkedinUrl">LinkedIn Profile URL</label>
+          <input type="url" id="linkedinUrl" placeholder="https://linkedin.com/in/yourprofile">
+        </div>
+
+        <button id="saveSetupBtn" class="btn btn-primary">
+          <span>Save & Continue to Profiles</span>
+        </button>
+      </div>
+
+      <!-- Profiles View -->
+      <div id="profilesView" class="view hidden">
+        <div class="profiles-header">
+          <h2>Resume Profiles</h2>
+          <p>Create different profiles for different job types (e.g., Cyber Security, Data Analytics)</p>
+        </div>
+
+        <div id="profilesList" class="profiles-list">
+          <!-- Profiles will be dynamically added here -->
+        </div>
+
+        <button id="addProfileBtn" class="btn btn-secondary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Add New Profile</span>
+        </button>
+
+        <button id="continueToMainBtn" class="btn btn-primary" style="margin-top: 12px;" disabled>
+          <span>Continue</span>
+        </button>
+      </div>
+
+      <!-- Profile Editor View -->
+      <div id="profileEditorView" class="view hidden">
+        <div class="settings-header">
+          <button id="profileEditorBackBtn" class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <h2 id="profileEditorTitle">New Profile</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="profileName">Profile Name <span class="required">*</span></label>
+          <input type="text" id="profileName" placeholder="e.g., Cyber Security, Data Analytics, CSM">
+        </div>
+
+        <div class="form-group">
+          <label for="profileBackground">Resume Content <span class="required">*</span></label>
+          <textarea id="profileBackground" placeholder="Paste or type your experience, skills, education for this profile...
+
+This should be tailored to the type of jobs you'll apply for with this profile.
+
+Example for a Cyber Security profile:
+- Security Engineer at Fortune 500 (2020-2024)
+- Led SOC team, implemented SIEM solutions
+- Skills: Penetration Testing, CISSP, AWS Security
+- Certifications: CISSP, CEH, Security+"></textarea>
+        </div>
+
+        <button id="saveProfileBtn" class="btn btn-primary">
+          <span>Save Profile</span>
+        </button>
+
+        <button id="deleteProfileBtn" class="btn btn-danger hidden" style="margin-top: 8px;">
+          <span>Delete Profile</span>
+        </button>
+      </div>
+
+      <!-- Main View -->
+      <div id="mainView" class="view hidden">
+        <!-- Profile Selector -->
+        <div class="profile-selector">
+          <label for="activeProfile">Using Profile:</label>
+          <select id="activeProfile">
+            <option value="">Select a profile...</option>
+          </select>
+          <button id="manageProfilesBtn" class="icon-btn" title="Manage Profiles">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Job Detection Status -->
+        <div id="jobStatus" class="status-card">
+          <div class="status-icon detecting">
+            <div class="spinner"></div>
+          </div>
+          <div class="status-text">
+            <span class="status-label">Detecting job posting...</span>
+          </div>
+        </div>
+
+        <!-- Job Preview with Match Score -->
+        <div id="jobPreview" class="job-preview hidden">
+          <div class="job-header">
+            <div class="job-info">
+              <h3 id="jobTitle">Job Title</h3>
+              <span id="jobCompany" class="company-name">Company Name</span>
+            </div>
+            <div id="initialMatchScore" class="match-score-badge hidden">
+              <span class="score-value">0%</span>
+              <span class="score-label">Match</span>
+            </div>
+          </div>
+          <div class="job-description-preview">
+            <p id="jobDescriptionPreview"></p>
+          </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button id="generateBtn" class="btn btn-primary btn-large" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Generate Tailored Resume</span>
+        </button>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state hidden">
+          <div class="loading-animation">
+            <div class="loading-bar"></div>
+          </div>
+          <p class="loading-text" id="loadingText">Crafting your perfect resume...</p>
+          <p class="loading-subtext">This may take 15-30 seconds</p>
+        </div>
+
+        <!-- Result View -->
+        <div id="resultView" class="result-view hidden">
+          <!-- Match Score Comparison -->
+          <div id="matchScoreComparison" class="match-comparison">
+            <div class="match-item before">
+              <div class="match-circle" id="beforeScoreCircle">
+                <svg viewBox="0 0 36 36">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path class="circle-progress" id="beforeProgress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <span class="match-value" id="beforeScoreValue">0%</span>
+              </div>
+              <span class="match-label">Before</span>
+            </div>
+            <div class="match-arrow">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="match-item after">
+              <div class="match-circle" id="afterScoreCircle">
+                <svg viewBox="0 0 36 36">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path class="circle-progress" id="afterProgress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                </svg>
+                <span class="match-value" id="afterScoreValue">0%</span>
+              </div>
+              <span class="match-label">After</span>
+            </div>
+            <div class="match-improvement" id="matchImprovement">
+              <span class="improvement-value">+0%</span>
+              <span class="improvement-label">improvement</span>
+            </div>
+          </div>
+
+          <!-- Keywords Added -->
+          <div id="keywordsSection" class="keywords-section hidden">
+            <div class="keywords-header">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M20.59 13.41L13.42 20.58C13.2343 20.766 13.0137 20.9135 12.7709 21.0141C12.5281 21.1148 12.2678 21.1666 12.005 21.1666C11.7422 21.1666 11.4819 21.1148 11.2391 21.0141C10.9963 20.9135 10.7757 20.766 10.59 20.58L2 12V2H12L20.59 10.59C20.9625 10.9647 21.1716 11.4716 21.1716 12C21.1716 12.5284 20.9625 13.0353 20.59 13.41Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 7H7.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Keywords Added</span>
+            </div>
+            <div id="keywordsList" class="keywords-list"></div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="result-tabs">
+            <button class="tab-btn active" data-tab="resume">Resume</button>
+            <button class="tab-btn" data-tab="cover-letter">Cover Letter</button>
+            <button class="tab-btn" data-tab="interview">Interview Prep</button>
+          </div>
+
+          <!-- Resume Tab -->
+          <div id="resumeTab" class="tab-content active">
+            <div class="result-header">
+              <h3>Tailored Resume</h3>
+              <div class="result-actions">
+                <button id="copyBtn" class="btn btn-secondary btn-small">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span>Copy</span>
+                </button>
+                <button id="downloadBtn" class="btn btn-secondary btn-small">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 15V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Download</span>
+                </button>
+              </div>
+            </div>
+            <div id="resumeContent" class="content-box"></div>
+          </div>
+
+          <!-- Cover Letter Tab -->
+          <div id="coverLetterTab" class="tab-content hidden">
+            <div class="result-header">
+              <h3>Cover Letter</h3>
+              <div class="result-actions">
+                <button id="copyCoverLetterBtn" class="btn btn-secondary btn-small">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M5 15H4C2.89543 15 2 14.1046 2 13V4C2 2.89543 2.89543 2 4 2H13C14.1046 2 15 2.89543 15 4V5" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+            <div id="coverLetterContent" class="content-box">
+              <div class="generate-prompt">
+                <p>Generate a tailored cover letter for this position</p>
+                <button id="generateCoverLetterBtn" class="btn btn-primary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>Generate Cover Letter</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interview Prep Tab -->
+          <div id="interviewTab" class="tab-content hidden">
+            <div class="result-header">
+              <h3>Interview Questions</h3>
+            </div>
+            <div id="interviewContent" class="content-box">
+              <div id="interviewQuestions" class="interview-questions"></div>
+            </div>
+          </div>
+
+          <div class="result-bottom-actions">
+            <button id="editBackgroundBtn" class="btn btn-secondary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M18.5 2.50001C18.8978 2.10219 19.4374 1.87869 20 1.87869C20.5626 1.87869 21.1022 2.10219 21.5 2.50001C21.8978 2.89784 22.1213 3.4374 22.1213 4.00001C22.1213 4.56262 21.8978 5.10219 21.5 5.50001L12 15L8 16L9 12L18.5 2.50001Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Edit Background</span>
+            </button>
+            <button id="regenerateBtn" class="btn btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 4V10H7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M23 20V14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20.49 9C19.9828 7.56678 19.1209 6.28531 17.9845 5.27542C16.8482 4.26553 15.4745 3.55976 13.9917 3.22426C12.5089 2.88875 10.9652 2.93434 9.50481 3.35677C8.04437 3.77921 6.71475 4.56471 5.64 5.64L1 10M23 14L18.36 18.36C17.2853 19.4353 15.9556 20.2208 14.4952 20.6432C13.0348 21.0657 11.4911 21.1112 10.0083 20.7757C8.52547 20.4402 7.1518 19.7345 6.01547 18.7246C4.87913 17.7147 4.01717 16.4332 3.51 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>Regenerate</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-state hidden">
+          <div class="error-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 8V12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="16" r="1" fill="currentColor"/>
+            </svg>
+          </div>
+          <p id="errorMessage">Something went wrong. Please try again.</p>
+          <button id="retryBtn" class="btn btn-secondary">Try Again</button>
+        </div>
+      </div>
+
+      <!-- History View -->
+      <div id="historyView" class="view hidden">
+        <div class="settings-header">
+          <button id="historyBackBtn" class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <h2>Resume History</h2>
+        </div>
+        <div id="historyList" class="history-list">
+          <p class="empty-state">No saved resumes yet</p>
+        </div>
+      </div>
+
+      <!-- Settings View -->
+      <div id="settingsView" class="view hidden">
+        <div class="settings-header">
+          <button id="backBtn" class="icon-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <h2>Settings</h2>
+        </div>
+
+        <div class="form-group">
+          <label for="settingsFullName">Full Name <span class="required">*</span></label>
+          <input type="text" id="settingsFullName" placeholder="John Smith">
+        </div>
+
+        <div class="form-group">
+          <label for="settingsPhone">Phone Number <span class="required">*</span></label>
+          <input type="tel" id="settingsPhone" placeholder="(555) 123-4567">
+        </div>
+
+        <div class="form-group">
+          <label for="settingsLinkedin">LinkedIn Profile URL</label>
+          <input type="url" id="settingsLinkedin" placeholder="https://linkedin.com/in/yourprofile">
+        </div>
+
+        <div class="form-group">
+          <label for="settingsBackground">Your Background <span class="required">*</span></label>
+          <textarea id="settingsBackground" placeholder="Your work history, skills, education..."></textarea>
+        </div>
+
+        <div class="settings-actions">
+          <button id="saveSettingsBtn" class="btn btn-primary">Save Changes</button>
+          <button id="clearDataBtn" class="btn btn-danger">Clear All Data</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast hidden">
+      <span id="toastMessage"></span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

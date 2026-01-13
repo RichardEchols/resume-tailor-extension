@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Generate Icons</title>
+</head>
+<body>
+  <h1>Right-click and save each image:</h1>
+  <canvas id="canvas128" width="128" height="128"></canvas>
+  <canvas id="canvas48" width="48" height="48"></canvas>
+  <canvas id="canvas16" width="16" height="16"></canvas>
+  
+  <script>
+    function drawIcon(ctx, size) {
+      const scale = size / 128;
+      
+      // Background gradient
+      const gradient = ctx.createLinearGradient(0, 0, size, size);
+      gradient.addColorStop(0, '#6366F1');
+      gradient.addColorStop(1, '#4F46E5');
+      
+      // Rounded rectangle background
+      ctx.beginPath();
+      const radius = 24 * scale;
+      ctx.moveTo(radius, 0);
+      ctx.lineTo(size - radius, 0);
+      ctx.quadraticCurveTo(size, 0, size, radius);
+      ctx.lineTo(size, size - radius);
+      ctx.quadraticCurveTo(size, size, size - radius, size);
+      ctx.lineTo(radius, size);
+      ctx.quadraticCurveTo(0, size, 0, size - radius);
+      ctx.lineTo(0, radius);
+      ctx.quadraticCurveTo(0, 0, radius, 0);
+      ctx.fillStyle = gradient;
+      ctx.fill();
+      
+      // Document
+      ctx.beginPath();
+      ctx.moveTo(40 * scale, 24 * scale);
+      ctx.lineTo(72 * scale, 24 * scale);
+      ctx.lineTo(96 * scale, 48 * scale);
+      ctx.lineTo(96 * scale, 104 * scale);
+      ctx.quadraticCurveTo(96 * scale, 108 * scale, 92 * scale, 108 * scale);
+      ctx.lineTo(40 * scale, 108 * scale);
+      ctx.quadraticCurveTo(36 * scale, 108 * scale, 36 * scale, 104 * scale);
+      ctx.lineTo(36 * scale, 28 * scale);
+      ctx.quadraticCurveTo(36 * scale, 24 * scale, 40 * scale, 24 * scale);
+      ctx.fillStyle = 'white';
+      ctx.fill();
+      
+      // Folded corner
+      ctx.beginPath();
+      ctx.moveTo(72 * scale, 24 * scale);
+      ctx.lineTo(72 * scale, 44 * scale);
+      ctx.quadraticCurveTo(72 * scale, 48 * scale, 76 * scale, 48 * scale);
+      ctx.lineTo(96 * scale, 48 * scale);
+      ctx.closePath();
+      ctx.fillStyle = '#E0E7FF';
+      ctx.fill();
+      
+      // Text lines
+      ctx.fillStyle = '#6366F1';
+      ctx.beginPath();
+      ctx.roundRect(48 * scale, 60 * scale, 40 * scale, 4 * scale, 2 * scale);
+      ctx.fill();
+      
+      ctx.fillStyle = '#A5B4FC';
+      ctx.beginPath();
+      ctx.roundRect(48 * scale, 72 * scale, 32 * scale, 4 * scale, 2 * scale);
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.roundRect(48 * scale, 84 * scale, 36 * scale, 4 * scale, 2 * scale);
+      ctx.fill();
+      
+      // Checkmark circle
+      ctx.beginPath();
+      ctx.arc(88 * scale, 88 * scale, 16 * scale, 0, Math.PI * 2);
+      ctx.fillStyle = '#10B981';
+      ctx.fill();
+      
+      // Checkmark
+      ctx.beginPath();
+      ctx.moveTo(82 * scale, 88 * scale);
+      ctx.lineTo(86 * scale, 92 * scale);
+      ctx.lineTo(94 * scale, 84 * scale);
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 3 * scale;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    
+    // Draw all sizes
+    [128, 48, 16].forEach(size => {
+      const canvas = document.getElementById('canvas' + size);
+      const ctx = canvas.getContext('2d');
+      drawIcon(ctx, size);
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.download = 'icon' + size + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.textContent = 'Download icon' + size + '.png';
+      document.body.appendChild(link);
+      document.body.appendChild(document.createElement('br'));
+    });
+  </script>
+</body>
+</html>

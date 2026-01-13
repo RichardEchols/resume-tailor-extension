@@ -1,0 +1,26 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="128" height="128" rx="24" fill="url(#gradient)"/>
+
+  <!-- Document shape -->
+  <path d="M40 24H72L96 48V104C96 106.209 94.2091 108 92 108H40C37.7909 108 36 106.209 36 104V28C36 25.7909 37.7909 24 40 24Z" fill="white"/>
+
+  <!-- Folded corner -->
+  <path d="M72 24V44C72 46.2091 73.7909 48 76 48H96L72 24Z" fill="#E0E7FF"/>
+
+  <!-- Lines representing text -->
+  <rect x="48" y="60" width="40" height="4" rx="2" fill="#6366F1"/>
+  <rect x="48" y="72" width="32" height="4" rx="2" fill="#A5B4FC"/>
+  <rect x="48" y="84" width="36" height="4" rx="2" fill="#A5B4FC"/>
+
+  <!-- Checkmark/tailor indicator -->
+  <circle cx="88" cy="88" r="16" fill="#10B981"/>
+  <path d="M82 88L86 92L94 84" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <defs>
+    <linearGradient id="gradient" x1="0" y1="0" x2="128" y2="128" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+</svg>

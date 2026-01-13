@@ -1,0 +1,8 @@
+name = "resume-tailor-api"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+workers_dev = true
+account_id = "6551b9da89e7115be4d8a8c9a497c2bf"
+
+[vars]
+# Environment variables (non-secret)
